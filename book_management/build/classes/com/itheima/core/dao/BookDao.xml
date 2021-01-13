@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.core.dao.BookDao">
+    <!--SQL片段  -->
+    <sql id="selectBookListWhere">
+        <where>
+	       <if test="isbn != null" >
+	           isbn like "%"#{isbn}"%"
+	       </if>
+	       <if test="title != null" >
+	        and title = #{title}
+	       </if>
+	       <if test="author != null" >
+	        and author = #{author}
+	       </if>
+	       <if test="publisher != null" >
+	        and publisher = #{publisher}
+	       </if>
+        </where>
+    </sql>
+	<!-- 查询图书列表  -->
+	<select id="selectBookList" parameterType="book" 
+                                           resultType="book">
+		SELECT
+			isbn,
+			title,
+			author,
+			publisher,
+			type,
+			price,
+			publicationDate,
+			introduction,
+			photo
+		FROM
+			book 
+		<include refid="selectBookListWhere"/>
+		<!-- 执行分页查询 -->
+		<if test="start !=null and rows != null">
+			limit #{start},#{rows}
+		</if>
+	</select>
+	<!-- 查询图书总数 -->
+	<select id="selectBookListCount" parameterType="Book" 
+                                                 resultType="Integer">
+		select count(*) from book
+		<include refid="selectBookListWhere"/>
+	</select>	
+	
+	<!-- 添加图书 -->
+	<insert id="createBook" parameterType="Book">
+	    insert into book(
+	                     isbn,
+						 title,
+						 author,
+						 publisher,
+						 type,
+						 price,
+				  		 publicationDate,
+				 		 introduction,
+						 photo
+	             )
+	             values(
+	                    #{isbn},
+	                    #{title},
+	                    #{author},
+	                    #{publisher},
+	                    #{type},
+	                    #{price},
+	                    #{publicationDate},
+	                    #{introduction},
+	                    #{photo}
+	            )
+	</insert>
+	
+	<!-- 根据isbn获取图书信息 -->
+	<select id="getBookByIsbn" parameterType="Integer" 
+	resultType="Book">
+	    select * from book where isbn = #{isbn}
+	</select>
+	
+	<!-- 更新图书 -->
+	<update id="updateBook" parameterType="Book">
+	    update book
+	    <set>
+	        <if test="title!=null">
+	            title=#{title},
+	        </if>
+	        <if test="author!=null">
+	            author=#{author},
+	        </if>
+	        <if test="publisher!=null">
+	            publisher=#{publisher},
+	        </if>
+	        <if test="type!=null">
+	            type=#{type},
+	        </if>
+	        <if test="price!=null">
+	            price=#{price},
+	        </if>
+	        <if test="publicationDate!=null">
+	            publicationDate=#{publicationDate},
+	        </if>
+	        <if test="introduction!=null">
+	            introduction=#{introduction},
+	        </if>
+	        <if test="photo!=null">
+	            photo=#{photo},
+	        </if>
+	    </set>
+	    where isbn=#{isbn}
+	</update>
+	<!-- 删除客户 -->
+	<delete id="deleteBook" parameterType="Integer">
+	    delete from book where isbn=#{isbn}
+	</delete>
+</mapper>
